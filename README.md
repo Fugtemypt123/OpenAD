@@ -34,6 +34,8 @@ Download data from [this drive folder](https://drive.google.com/drive/folders/1f
 
 Currently, we support 2 models (OpenAD with backbones of [PointNet++](https://proceedings.neurips.cc/paper/2017/file/d8bf84be3800d12f74d8b05e9b89836f-Paper.pdf) and [DGCNN](https://dl.acm.org/doi/pdf/10.1145/3326362)) and 2 settings (full-shape and partial-view).
 
+(shaofeng: 目前的数据放 `./data` 目录下，可以改)
+
 ## 3. Training
 Please train the model on a single GPU for the best performance. Below are the steps for training the model with PointNet++ backbone on the full-shape setting, those of other combinations are equivalent.
 
@@ -52,6 +54,8 @@ The followings are steps for open-vocabulary testing a trained model with PointN
 	Where ```<path to your checkpoint model>``` is your trained model.
 
 We provide the pretrained models at [this drive](https://drive.google.com/drive/folders/17895vwgGHfIlDj3q0a7BOg6cotH5RTjm?usp=sharing).
+
+(shaofeng: 目前的ckpt放 `./pretrain` 目录下，可以改)
 
 
 ## 5. Citation
