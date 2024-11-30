@@ -5,3 +5,6 @@ __pycache__/
 *.pkl
 *.ipynb
 *.log
+data/
+pretrain/
+log/

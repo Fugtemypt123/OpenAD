@@ -25,10 +25,9 @@ We strongly encourage you to create a separate CONDA environment.
 ```
 conda create -n openad python=3.8
 conda activate openad
-conda install pytorch pytorch-cuda=11.6 -c pytorch -c nvidia
-conda install pip
 pip install -r requirements.txt
 ```
+(shaofeng: 后面缺什么下什么就行)
 
 ## 2. Data
 Download data from [this drive folder](https://drive.google.com/drive/folders/1f-_V_iA6POMYlBe2byuplJfdKmV72BHu?usp=sharing).
