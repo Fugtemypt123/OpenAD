@@ -57,7 +57,17 @@ We provide the pretrained models at [this drive](https://drive.google.com/drive/
 
 (shaofeng: 目前的ckpt放 `./pretrain` 目录下，可以改)
 
-## 5. Train CLPP (Contrastive Language-PointCloud Pre-trained)
+## 5. Generate new data for the next steps (Completed by ysf)
+
+To generate new data for the following steps, run:
+
+```
+python caption.py
+```
+
+It creates the pair of ```<point cloud, functionality (text prompt)>```.
+
+## 6. Train CLPP (Contrastive Language-PointCloud Pre-trained)
 
 To arrive the model that can align the semantics of a text prompt with the semantics of a set of point clouds of an object, the following steps leverage contrastive learning to finetune the pointnet++ encoder.
 
@@ -67,7 +77,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_clpp.py --config ./config/openad_pn2_clpp/c
 
 Where ```<path to your checkpoint model>``` is your trained model in step 3.
 
-## 6. Training-free method to rank multiple objects based on a query.
+## 7. Training-free method to rank multiple objects based on a query.
 
 Following step provides a training-free method to rank multiple objects based on a query. (This evaluation is not a test result of CLPP above, but a training-free approach).
 
@@ -75,7 +85,7 @@ Following step provides a training-free method to rank multiple objects based on
 CUDA_VISIBLE_DEVICES=0 python3 rank_multi_obj.py --config ./config/openad_pn2/full_shape_open_vocab_cfg.py --checkpoint <path to your checkpoint model> --gpu 0 --query "It can contain some objects or water"
 ```
 
-## 7. Citation
+## 8. Citation
 
 If you find our work useful for your research, please cite:
 ```
@@ -87,6 +97,6 @@ If you find our work useful for your research, please cite:
 }
 ```
 
-## 8. Acknowledgement
+## 9. Acknowledgement
 
 Our source code is built with the heavy support from [3D AffordaceNet](https://github.com/Gorilla-Lab-SCUT/AffordanceNet). We express a huge thank to them.
