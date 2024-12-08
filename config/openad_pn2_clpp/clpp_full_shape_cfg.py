@@ -2,8 +2,8 @@ import os
 from os.path import join as opj
 from utils import PN2_BNMomentum, PN2_Scheduler
 
-exp_name = "OPENAD_PN2_FULL_SHAPE_Release"
-work_dir = opj("./log/openad_pn2", exp_name)
+exp_name = "OPENAD_PN2_CLPP"
+work_dir = opj("./log/openad_pn2_clpp", exp_name)
 seed = 1
 try:
     os.makedirs(work_dir)
@@ -25,7 +25,7 @@ optimizer = dict(
 )
 
 model = dict(
-    type='openad_pn2',
+    type='openad_pn2_clpp',
     weights_init='pn2_init'
 )
 
@@ -36,7 +36,7 @@ training_cfg = dict(
     rotate='None',  # z,so3
     semi=False,
     rotate_type=None,
-    batch_size=5,
+    batch_size=16,
     epoch=200,
     seed=1,
     dropout=0.5,
@@ -49,9 +49,9 @@ training_cfg = dict(
     train_affordance = ['grasp', 'contain', 'lift', 'openable', 'layable', 'sittable',
                'support', 'wrap_grasp', 'pourable', 'move', 'displaY', 'pushable', 'pull',
                'listen', 'wear', 'press', 'cut', 'stab', 'none'],
-    val_affordance = ['grab', 'accommodate', 'raise', 'unlock', 'rest', 'take a seat', 'bear',
-                'wrap', 'pour', 'reposition', 'demonstrate', 'push', 'drag', 'hear',
-                'clothe', 'thumb', 'slice', 'jab', 'none'],
+    val_affordance = ['grasp', 'contain', 'lift', 'openable', 'layable', 'sittable',
+               'support', 'wrap_grasp', 'pourable', 'move', 'displaY', 'pushable', 'pull',
+               'listen', 'wear', 'press', 'cut', 'stab', 'none'],
     weights_dir = './data/full_shape_weights.npy'
 )
 
@@ -59,5 +59,6 @@ data = dict(
     data_root = './data',
     category = ['grasp', 'contain', 'lift', 'openable', 'layable', 'sittable',
                'support', 'wrap_grasp', 'pourable', 'move', 'displaY', 'pushable', 'pull',
-               'listen', 'wear', 'press', 'cut', 'stab', 'none']
+               'listen', 'wear', 'press', 'cut', 'stab', 'none'],
+    ysf = True
 )

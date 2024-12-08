@@ -14,11 +14,12 @@ def pc_normalize(pc):
 
 
 class AffordNetDataset(Dataset):
-    def __init__(self, data_dir, split, partial=False):
+    def __init__(self, data_dir, split, partial=False, ysf=False):
         super().__init__()
         self.data_dir = data_dir
         self.split = split
         self.partial = partial
+        self.ysf = ysf
 
         self.load_data()
         self.affordances = self.all_data[0]["affordance"]
@@ -27,30 +28,59 @@ class AffordNetDataset(Dataset):
     def load_data(self):
         self.all_data = []
 
-        if self.partial:
-            with open(opj(self.data_dir, 'partial_view_%s_data.pkl' % self.split), 'rb') as f:
-                temp_data = pkl.load(f)
-        else:
-            with open(opj(self.data_dir, 'full_shape_%s_data.pkl' % self.split), 'rb') as f:
-                temp_data = pkl.load(f)
-        for _, info in enumerate(temp_data):
+        if self.ysf:
             if self.partial:
-                partial_info = info["partial"]
-                for view, data_info in partial_info.items():
+                with open(opj(self.data_dir, 'ysf_partial_view_%s_data.pkl' % self.split), 'rb') as f:
+                    temp_data = pkl.load(f)
+            else:
+                with open(opj(self.data_dir, 'ysf_full_shape_%s_data.pkl' % self.split), 'rb') as f:
+                    temp_data = pkl.load(f)
+            for _, info in enumerate(temp_data):
+                if self.partial:
+                    partial_info = info["partial"]
+                    for view, data_info in partial_info.items():
+                        temp_info = {}
+                        temp_info["shape_id"] = info["shape_id"]
+                        temp_info["semantic class"] = info["semantic class"]
+                        temp_info["affordance"] = info["affordance"]
+                        temp_info["view_id"] = view
+                        temp_info["data_info"] = data_info
+                        temp_info["functionality"] = info["functionality"][0]
+                        self.all_data.append(temp_info)
+                else:
                     temp_info = {}
                     temp_info["shape_id"] = info["shape_id"]
                     temp_info["semantic class"] = info["semantic class"]
                     temp_info["affordance"] = info["affordance"]
-                    temp_info["view_id"] = view
-                    temp_info["data_info"] = data_info
+                    temp_info["data_info"] = info["data_info"]
+                    temp_info["functionality"] = info["functionality"][0]
                     self.all_data.append(temp_info)
+
+        else:
+            if self.partial:
+                with open(opj(self.data_dir, 'partial_view_%s_data.pkl' % self.split), 'rb') as f:
+                    temp_data = pkl.load(f)
             else:
-                temp_info = {}
-                temp_info["shape_id"] = info["shape_id"]
-                temp_info["semantic class"] = info["semantic class"]
-                temp_info["affordance"] = info["affordance"]
-                temp_info["data_info"] = info["full_shape"]
-                self.all_data.append(temp_info)
+                with open(opj(self.data_dir, 'full_shape_%s_data.pkl' % self.split), 'rb') as f:
+                    temp_data = pkl.load(f)
+            for _, info in enumerate(temp_data):
+                if self.partial:
+                    partial_info = info["partial"]
+                    for view, data_info in partial_info.items():
+                        temp_info = {}
+                        temp_info["shape_id"] = info["shape_id"]
+                        temp_info["semantic class"] = info["semantic class"]
+                        temp_info["affordance"] = info["affordance"]
+                        temp_info["view_id"] = view
+                        temp_info["data_info"] = data_info
+                        self.all_data.append(temp_info)
+                else:
+                    temp_info = {}
+                    temp_info["shape_id"] = info["shape_id"]
+                    temp_info["semantic class"] = info["semantic class"]
+                    temp_info["affordance"] = info["affordance"]
+                    temp_info["data_info"] = info["full_shape"]
+                    self.all_data.append(temp_info)
 
     def __getitem__(self, index):
 
@@ -69,6 +99,10 @@ class AffordNetDataset(Dataset):
         targets = model_data[:, 3:]
 
         datas, _, _ = pc_normalize(datas)
+
+        if self.ysf:
+            functionality = data_dict["functionality"]
+            return datas, datas, targets, modelid, modelcat, functionality
 
         return datas, datas, targets, modelid, modelcat
 

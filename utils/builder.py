@@ -11,6 +11,7 @@ from torch.optim import SGD, Adam
 model_pool = {
     'openad_pn2': OpenAD_PN2,
     'openad_dgcnn': OpenAD_DGCNN,
+    'openad_pn2_clpp': OpenAD_PN2_CLPP,
 }
 
 optim_pool = {
@@ -53,14 +54,21 @@ def build_dataset(cfg):
         afford_cat = data_info.category 
         if_partial = cfg.training_cfg.get('partial', False)
         # the training set
-        train_set = AffordNetDataset(
-            data_root, 'train', partial=if_partial)
+        if 'ysf' in data_info:
+            train_set = AffordNetDataset(
+                data_root, 'val', partial=if_partial, ysf=data_info.ysf)
+        else:
+            train_set = AffordNetDataset(
+                data_root, 'train', partial=if_partial)
         # the validation set
         val_set = AffordNetDataset(
             data_root, 'val', partial=if_partial)
+        test_set = AffordNetDataset(
+            data_root, 'test', partial=if_partial)
         dataset_dict = dict(
             train_set=train_set,
-            val_set=val_set
+            val_set=val_set,
+            test_set=test_set
         )
         return dataset_dict
     else:
@@ -70,6 +78,7 @@ def build_dataset(cfg):
 def build_loader(cfg, dataset_dict):
     train_set = dataset_dict["train_set"]
     val_set = dataset_dict["val_set"]
+    test_set = dataset_dict["test_set"]
     batch_size_factor = 1
     # training loader
     train_loader = DataLoader(train_set, batch_size=cfg.training_cfg.batch_size // batch_size_factor,
@@ -77,15 +86,22 @@ def build_loader(cfg, dataset_dict):
     # validation loader
     val_loader = DataLoader(val_set, batch_size=cfg.training_cfg.batch_size // batch_size_factor,
                             shuffle=False, num_workers=8, drop_last=False)
+    test_loader = DataLoader(test_set, batch_size=cfg.training_cfg.batch_size // batch_size_factor,
+                                shuffle=False, num_workers=8, drop_last=False)
     loader_dict = dict(
         train_loader=train_loader,
-        val_loader=val_loader
+        val_loader=val_loader,
+        test_loader=test_loader
     )
     return loader_dict
 
 
 def build_loss(cfg):
     loss_fn = loss.EstimationLoss(cfg)
+    return loss_fn
+
+def build_loss_clpp():
+    loss_fn = loss.ContrastiveLoss()
     return loss_fn
 
 

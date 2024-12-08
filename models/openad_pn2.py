@@ -63,6 +63,7 @@ class OpenAD_PN2(nn.Module):
         l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
         # print(l2_xyz.size(), l2_points.size())
         l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
+        # print(l3_xyz.size(), l3_points.size())
         
         # Feature Propagation layers
         l2_points = self.fp3(l2_xyz, l3_xyz, l2_points, l3_points)
@@ -73,6 +74,9 @@ class OpenAD_PN2(nn.Module):
             [l0_xyz, l0_points], 1), l1_points)
         # print(l0_points.size())
 
+        # print("----------------------------------------")
+        # raise ValueError("With great power comes great responsibility")
+
         l0_points = self.bn1(self.conv1(l0_points))
 
         # cosine similarity
@@ -80,8 +84,69 @@ class OpenAD_PN2(nn.Module):
         l0_points = l0_points.permute(0, 2, 1).float()
         with torch.no_grad():
             text_features = cls_encoder(affordance)
+            print(text_features.size())
+            print(l0_points.size())
+            raise ValueError("With great power comes great responsibility")
         x = (self.logit_scale * (l0_points @ text_features) / (torch.norm(l0_points, dim=2, keepdim=True)\
             @ torch.norm(text_features, dim=0, keepdim=True))).permute(0, 2, 1)
+        
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class OpenAD_PN2_CLPP(nn.Module):
+    def __init__(self, args, num_classes, normal_channel=False):
+        super().__init__()
+
+        if normal_channel:
+            additional_channel = 3
+        else:
+            additional_channel = 0
+        self.normal_channel = normal_channel
+        self.sa1 = PointNetSetAbstractionMsg(512, [0.1, 0.2, 0.4], [
+                                             32, 64, 128], 3+additional_channel, [[32, 32, 64],\
+                                                [64, 64, 128], [64, 96, 128]])
+        self.sa2 = PointNetSetAbstractionMsg(
+            128, [0.4, 0.8], [64, 128], 128+128+64, [[128, 128, 256], [128, 196, 256]])
+        self.sa3 = PointNetSetAbstraction(
+            npoint=None, radius=None, nsample=None, in_channel=512 + 3, mlp=[256, 512, 1024], group_all=True)
+        
+        self.conv2 = nn.Conv1d(1024, 512, 1)
+        self.bn1 = nn.BatchNorm1d(512)
+
+        self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
+
+    def forward(self, xyz, text):
+        # Set Abstraction layers
+        xyz = xyz.contiguous()
+        B, C, N = xyz.shape
+        if self.normal_channel:
+            l0_points = xyz
+            l0_xyz = xyz[:, :3, :]
+        else:
+            l0_xyz = xyz
+            l0_points = xyz
+
+        l1_xyz, l1_points = self.sa1(l0_xyz, l0_points)
+        # print(l1_xyz.size(), l1_points.size())
+        l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
+        # print(l2_xyz.size(), l2_points.size())
+        l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
+
+        l3_points = self.bn1(self.conv2(l3_points))
+
+        l3_points = l3_points.squeeze(-1)
+
+        # cosine similarity
+
+        l3_points = l3_points.float()
+        with torch.no_grad():
+            text_features = cls_encoder(text)
+            # print(text_features.size())
+            # print(l3_points.size())
+            # raise ValueError("With great power comes great responsibility")
+        x = (self.logit_scale * (l3_points @ text_features) / (torch.norm(l3_points, dim=1, keepdim=True)\
+            @ torch.norm(text_features, dim=0, keepdim=True)))
         
         x = F.log_softmax(x, dim=1)
         return x

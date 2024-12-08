@@ -91,3 +91,68 @@ class Trainer(object):
                 epoch_runner = getattr(self, key)
                 for e in range(running_epoch):
                     epoch_runner()
+
+
+class TrainerCLPP(Trainer):
+    def __init__(self, cfg, running):
+        super().__init__(cfg, running)
+        return
+
+    def train(self):
+        train_loss = 0.0
+        count = 0.0
+        self.model.train()
+        num_batches = len(self.train_loader)
+        start = time()
+        self.logger.cprint("Epoch(%d) begin training........" % self.epoch)
+        for data, _, label, _, _, text in tqdm(self.train_loader, total=len(self.train_loader), smoothing=0.9):
+            data, label = data.float().cuda(), label.float().cuda()
+            
+            data = data.permute(0, 2, 1)
+            label = torch.squeeze(label).long().contiguous()
+            batch_size = data.size()[0]
+            num_point = data.size()[2]
+            self.optimizer.zero_grad()
+            afford_pred = self.model(data, text)
+
+            afford_pred = afford_pred.contiguous()
+            loss = self.loss(afford_pred)
+
+            loss.backward()
+            self.optimizer.step()
+
+            count += batch_size * num_point
+            train_loss += loss.item()
+        self.scheduler.step()
+        if self.bn_momentum != None:
+            self.model.apply(lambda x: self.bn_momentum(x, self.epoch))
+        epoch_time = time() - start
+        outstr = 'Train(%d), loss: %.6f, time: %d s' % (
+            self.epoch, train_loss*1.0/num_batches, epoch_time//1)
+        self.writer.add_scalar('Loss', train_loss*1.0/num_batches, self.epoch)
+        self.logger.cprint(outstr)
+        self.epoch += 1
+
+    def val(self):
+        # self.logger.cprint('Epoch(%d) begin validating......' % (self.epoch-1))
+        # mIoU = evaluation(self.logger, self.model,
+        #                  self.val_loader, self.val_affordance)
+
+        # if mIoU >= self.best_val_mIoU:
+        #     self.best_val_mIoU = mIoU
+        #     self.logger.cprint('Saving model......')
+        #     self.logger.cprint('Best mIoU: %f' % self.best_val_mIoU)
+        #     torch.save(self.model.state_dict(),
+        #            opj(self.work_dir, 'best_clpp_model.t7'))
+
+        torch.save(self.model.state_dict(),
+                      opj(self.work_dir, 'current_clpp_model.t7'))
+
+    def run(self):
+        EPOCH = self.cfg.training_cfg.epoch
+        workflow = self.cfg.training_cfg.workflow
+        while self.epoch < EPOCH:
+            for key, running_epoch in workflow.items():
+                epoch_runner = getattr(self, key)
+                for e in range(running_epoch):
+                    epoch_runner()
