@@ -4,7 +4,7 @@ import base64
 from io import BytesIO
 
 client = OpenAI(
-  api_key="sk-NJXrSjHdKph9kk1K9a81A68fA1Be4e7798EbB622Fa5cA062",
+  api_key="",   # your API here
   base_url="https://29qg.com/v1"
 )
 

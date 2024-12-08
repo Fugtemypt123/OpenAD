@@ -59,7 +59,7 @@ We provide the pretrained models at [this drive](https://drive.google.com/drive/
 
 ## 5. Generate new data for the next steps (Completed by ysf)
 
-To generate new data for the following steps, run:
+To generate new data for the following steps, please paste your api key [here](https://github.com/Fugtemypt123/OpenAD/blob/main/utils/gpt.py#L7). and run:
 
 ```
 python caption.py
