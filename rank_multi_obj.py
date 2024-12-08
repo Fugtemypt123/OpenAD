@@ -16,6 +16,12 @@ def parse_args():
         default=None,
         help="Number of gpus to use"
     )
+    parser.add_argument(
+        "--query",
+        type=str,
+        default="It can contain some objects or water",
+        help="The affordance query"
+    )
     args = parser.parse_args()
     return args
 
@@ -48,4 +54,4 @@ if __name__ == "__main__":
     loader_dict = build_loader(cfg, dataset_dict)
     test_loader = loader_dict.get("test_loader", None)
     val_affordance = cfg.training_cfg.val_affordance
-    mIoU = get_best_obj(logger, model, test_loader, val_affordance, cfg.training_cfg.batch_size)
+    mIoU = get_best_obj(logger, model, test_loader, val_affordance, args.query, cfg.training_cfg.batch_size)

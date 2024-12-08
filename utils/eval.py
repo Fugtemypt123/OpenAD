@@ -53,7 +53,7 @@ def evaluation(logger, model, val_loader, affordance):
     return mIoU
 
 
-def get_best_obj(logger, model, test_loader, affordance, batch_size=5):
+def get_best_obj(logger, model, test_loader, affordance, prompt, batch_size=5):
     num_classes = len(affordance)
     total_seen_class = torch.zeros(batch_size, num_classes)
     with torch.no_grad():
@@ -62,7 +62,7 @@ def get_best_obj(logger, model, test_loader, affordance, batch_size=5):
 
             (data, _, label, _, model_class) = temp_data
 
-            prompt = "It can contain some objects or water"
+            # prompt = "It can contain some objects or water"
 
             data, label = data.float().cuda(), label.float().cuda()
             data = data.permute(0, 2, 1)
