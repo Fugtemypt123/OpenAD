@@ -98,20 +98,33 @@ class OpenAD_PN2_CLPP(nn.Module):
         # Make the text encoder trainable during CLPP training
         for param in self.cls_encoder.parameters():
             param.requires_grad = True
+        
+        print("Text encoder main trainable during CLPP training")
 
         if normal_channel:
             additional_channel = 3
         else:
             additional_channel = 0
         self.normal_channel = normal_channel
+        
         self.sa1 = PointNetSetAbstractionMsg(512, [0.1, 0.2, 0.4], [
                                              32, 64, 128], 3+additional_channel, [[32, 32, 64],\
                                                 [64, 64, 128], [64, 96, 128]])
+        for param in self.sa1.parameters():
+            param.requires_grad = False
+        
         self.sa2 = PointNetSetAbstractionMsg(
             128, [0.4, 0.8], [64, 128], 128+128+64, [[128, 128, 256], [128, 196, 256]])
+        
+        for param in self.sa2.parameters():
+            param.requires_grad = False
+
         self.sa3 = PointNetSetAbstraction(
             npoint=None, radius=None, nsample=None, in_channel=512 + 3, mlp=[256, 512, 1024], group_all=True)
         
+        for param in self.sa3.parameters():
+            param.requires_grad = False
+       
         self.conv2 = nn.Conv1d(1024, 512, 1)
         self.bn1 = nn.BatchNorm1d(512)
 

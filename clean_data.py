@@ -19,7 +19,7 @@ for i in range(len(data)):
     new_line['data_info'] = data_info
     func = []
     for f in data[i]['functionality']:
-        sentence = f.replace("The "+obj_class, "It").replace(obj_class, "It")
+        sentence = f.replace("The "+obj_class, "It").replace(obj_class, "it")
         func.append(sentence)
     new_line['functionality'] = func
 
