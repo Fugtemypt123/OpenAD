@@ -93,6 +93,11 @@ class OpenAD_PN2(nn.Module):
 class OpenAD_PN2_CLPP(nn.Module):
     def __init__(self, args, num_classes, normal_channel=False):
         super().__init__()
+        
+        self.cls_encoder = ClassEncoder()
+        # Make the text encoder trainable during CLPP training
+        for param in self.cls_encoder.parameters():
+            param.requires_grad = True
 
         if normal_channel:
             additional_channel = 3
@@ -137,7 +142,7 @@ class OpenAD_PN2_CLPP(nn.Module):
 
         l3_points = l3_points.float()
         with torch.no_grad():
-            text_features = cls_encoder(text)
+            text_features = self.cls_encoder(text) # Use the trainable text encoder
             # print(text_features.size())
             # print(l3_points.size())
             # raise ValueError("With great power comes great responsibility")
