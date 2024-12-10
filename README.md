@@ -65,7 +65,7 @@ To generate new data for the following steps, please paste your api key [here](h
 python caption.py
 ```
 
-It creates the pair of ```<point cloud, functionality (text prompt)>```. The data can be download [here](hhttps://www.dropbox.com/scl/fo/288smvgyfjkce410ki2c4/ANthSlfqpMN_lpZvfkI1-Fs?rlkey=tvsr4qihekdi7yspp1eaydlgz&st=k0ur9df3&dl=0) and put under dir ```./data```.
+It creates the pair of ```<point cloud, functionality (text prompt)>```. The data can be download [here](https://www.dropbox.com/scl/fo/288smvgyfjkce410ki2c4/ANthSlfqpMN_lpZvfkI1-Fs?rlkey=tvsr4qihekdi7yspp1eaydlgz&st=k0ur9df3&dl=0) and put under dir ```./data```.
 
 ## 6. Train CLPP (Contrastive Language-PointCloud Pre-trained)
 
