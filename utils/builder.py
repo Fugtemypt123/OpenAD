@@ -56,13 +56,17 @@ def build_dataset(cfg):
         # the training set
         if 'ysf' in data_info:
             train_set = AffordNetDataset(
-                data_root, 'val', partial=if_partial, ysf=data_info.ysf)
+                data_root, 'train', partial=if_partial, ysf=data_info.ysf)
         else:
             train_set = AffordNetDataset(
                 data_root, 'train', partial=if_partial)
         # the validation set
-        val_set = AffordNetDataset(
-            data_root, 'val', partial=if_partial)
+        if 'ysf' in data_info:
+            val_set = AffordNetDataset(
+                data_root, 'val', partial=if_partial, ysf=data_info.ysf)
+        else:
+            val_set = AffordNetDataset(
+                data_root, 'val', partial=if_partial)
         test_set = AffordNetDataset(
             data_root, 'test', partial=if_partial)
         dataset_dict = dict(

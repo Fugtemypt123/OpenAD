@@ -53,6 +53,31 @@ def evaluation(logger, model, val_loader, affordance):
     return mIoU
 
 
+def test_clpp(logger, model, val_loader, affordance, prompt):
+    with torch.no_grad():
+        model.eval()
+        for i, temp_data in tqdm(enumerate(val_loader), total=len(val_loader), smoothing=0.9):
+            (data, _, label, _, model_class) = temp_data
+
+            data, label = data.float().cuda(), label.float().cuda()
+            data = data.permute(0, 2, 1)
+            label = torch.squeeze(label).cpu().numpy()
+            B = label.shape[0]
+            N = label.shape[1]
+            
+            afford_pred = model.get_logits(data, prompt)
+            print(f'the shape of afford_pred: {afford_pred.shape}')
+            print(f'afford_pred: {afford_pred}')
+            afford_pred = afford_pred.squeeze(-1).cpu().numpy()
+            afford_pred = np.argmax(afford_pred)
+            print(f'the shape of afford_pred: {afford_pred.shape}')
+            print(f'afford_pred: {afford_pred}')
+
+            print(f'prompt: {prompt}')
+            print(f'object class: {model_class}')
+            print(f'Best object: {model_class[afford_pred]}')
+
+
 def get_best_obj(logger, model, test_loader, affordance, prompt, batch_size=5):
     num_classes = len(affordance)
     total_seen_class = torch.zeros(batch_size, num_classes)
@@ -107,8 +132,7 @@ def get_affordance_gpt(prompt, affordance, top_k):
                     ],
                 temperature=0.001,
                 max_tokens=1000,
-                # api_key="sb-277e47bda17395aca60ea4eea1b192060d6213ccea433849",
-                api_key = "sb-92061fe4f190e8af067b72e654ebb7956dde80a55e4689b9",
+                api_key = "",  # Add your API key here
             )
             return response.choices[0]["message"]["content"]
 
@@ -125,7 +149,6 @@ def get_affordance_gpt(prompt, affordance, top_k):
     response = get_response(ques)
     indexes = [int(i) for i in response.split()]
     return indexes
-
 
 
 def get_affordance_transformer(prompt, affordance, top_k):

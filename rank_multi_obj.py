@@ -54,4 +54,5 @@ if __name__ == "__main__":
     loader_dict = build_loader(cfg, dataset_dict)
     test_loader = loader_dict.get("test_loader", None)
     val_affordance = cfg.training_cfg.val_affordance
-    mIoU = get_best_obj(logger, model, test_loader, val_affordance, args.query, cfg.training_cfg.batch_size)
+    # mIoU = get_best_obj(logger, model, test_loader, val_affordance, args.query, cfg.training_cfg.batch_size)
+    test_clpp(logger, model, test_loader, val_affordance, args.query)
