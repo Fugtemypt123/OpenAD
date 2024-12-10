@@ -74,9 +74,6 @@ class OpenAD_PN2(nn.Module):
             [l0_xyz, l0_points], 1), l1_points)
         # print(l0_points.size())
 
-        # print("----------------------------------------")
-        # raise ValueError("With great power comes great responsibility")
-
         l0_points = self.bn1(self.conv1(l0_points))
 
         # cosine similarity
@@ -84,9 +81,8 @@ class OpenAD_PN2(nn.Module):
         l0_points = l0_points.permute(0, 2, 1).float()
         with torch.no_grad():
             text_features = cls_encoder(affordance)
-            print(text_features.size())
-            print(l0_points.size())
-            raise ValueError("With great power comes great responsibility")
+            # print(text_features.size())
+            # print(l0_points.size())
         x = (self.logit_scale * (l0_points @ text_features) / (torch.norm(l0_points, dim=2, keepdim=True)\
             @ torch.norm(text_features, dim=0, keepdim=True))).permute(0, 2, 1)
         

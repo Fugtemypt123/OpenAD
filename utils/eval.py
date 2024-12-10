@@ -29,9 +29,7 @@ def evaluation(logger, model, val_loader, affordance):
             afford_pred = model(data, affordance)
             afford_pred = afford_pred.permute(0, 2, 1).cpu().numpy()
             afford_pred = np.argmax(afford_pred, axis=2)
-            # print(f'Batch size: {B}, Number of points: {N}')
-            # print(f'Affordance prediction: {afford_pred}')
-            # raise ValueError("唯有写作，既是困顿里的正信，也是游方时的袈裟。")
+        
             correct = np.sum((afford_pred == label))
             total_correct += correct
             total_seen += (B * N)
