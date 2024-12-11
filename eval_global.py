@@ -18,6 +18,12 @@ def parse_args():
         help="Number of gpus to use"
     )
     parser.add_argument(
+        "--cand_num",
+        type=int,
+        default=5,
+        help="Number of candidate for each test"
+    )
+    parser.add_argument(
         "--test_num",
         type=int,
         default=50,
@@ -31,7 +37,7 @@ if __name__ == "__main__":
     cfg = Config.fromfile(args.config)
 
     from dataset.AffordanceNet import TestDataset
-    test_dataset = TestDataset(cfg.data.data_root, test_num=args.test_num)
+    test_dataset = TestDataset(cfg.data.data_root, test_num=args.test_num, cand_num=args.cand_num, seed=cfg.seed)
 
     logger = IOStream(opj(cfg.work_dir, 'result_' + cfg.model.type + '.log'))
     if cfg.get('seed', None) != None:

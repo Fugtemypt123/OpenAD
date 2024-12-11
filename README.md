@@ -85,7 +85,17 @@ Following step provides a training-free method to rank multiple objects based on
 CUDA_VISIBLE_DEVICES=0 python3 rank_multi_obj.py --config ./config/openad_pn2/full_shape_open_vocab_cfg.py --checkpoint <path to your checkpoint model> --gpu 0 --query "It can contain some objects or water"
 ```
 
-## 8. Citation
+## 8. Multi-object evaluation.
+
+Evaluate the model on test dataset created from `ysf_full_shape_val`, which gives the model `cand_num` objects and one ground-truth `functionality` prompt and asks the model which object best suits the prompt.
+
+Each object is sampled from different categories to avoid ambiguity.
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python3 eval_global.py --config ./config/openad_pn2_clpp/clpp_full_shape_open_vocab_cfg.py --checkpoint ${ckpt_path} --gpu 0 --test_num 50 --cand_num 5
+```
+
+## Citation
 
 If you find our work useful for your research, please cite:
 ```

@@ -13,7 +13,7 @@ def pc_normalize(pc):
     return pc, centroid, m
 
 class TestDataset(Dataset):
-    def __init__(self, data_dir, cand_num=5, test_num=50, partial=False, split="test", ysf=True):
+    def __init__(self, data_dir, cand_num=5, test_num=50, partial=False, split="test", ysf=True, seed=1):
         '''
         Build test dataset for evaluating CLPP trained model.
         TODO: Currently use the validation dataset as the test dataset, should switch to test dataset later.
@@ -28,6 +28,8 @@ class TestDataset(Dataset):
                 - query: str
                 - gt: int
         '''
+        np.random.seed(seed)
+        print(f"Set the np.ramdom.seed in TestDataset to {seed}")
         self.split = split
         test_dataset = []
         assert split == "test", "Build testdataset should be used for test split"
