@@ -6,7 +6,26 @@ import openai
 
 from sentence_transformers import SentenceTransformer, util
 
+def eval_global_util(model, val_loader):
+    with torch.no_grad():
+        model.eval()
+        total = len(val_loader)
+        acc = 0
+        for i, temp_data in tqdm(enumerate(val_loader), total=len(val_loader), smoothing=0.9):
+            (data, prompt, gt_index, semantic_label) = temp_data
+            data = data.squeeze(0) # We already have batch dimension in the build_testdataset
 
+            data = data.float().cuda()
+            data = data.permute(0, 2, 1)
+            
+            afford_pred = model.get_logits(data, prompt)
+            afford_pred = afford_pred.squeeze(-1).cpu().numpy()
+            afford_pred = np.argmax(afford_pred)
+            
+            acc += (afford_pred == gt_index)
+        
+        print(f"Accuracy: {acc.item()/total:.3f}")
+        
 def evaluation(logger, model, val_loader, affordance):
     num_classes = len(affordance)
     total_correct = 0
@@ -56,7 +75,9 @@ def test_clpp(logger, model, val_loader, affordance, prompt):
         model.eval()
         for i, temp_data in tqdm(enumerate(val_loader), total=len(val_loader), smoothing=0.9):
             (data, _, label, _, model_class) = temp_data
-
+            print("data shape", data.shape)
+            print("label shape", label.shape)
+            print(model_class)
             data, label = data.float().cuda(), label.float().cuda()
             data = data.permute(0, 2, 1)
             label = torch.squeeze(label).cpu().numpy()
