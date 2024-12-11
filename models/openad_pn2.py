@@ -110,20 +110,20 @@ class OpenAD_PN2_CLPP(nn.Module):
         self.sa1 = PointNetSetAbstractionMsg(512, [0.1, 0.2, 0.4], [
                                              32, 64, 128], 3+additional_channel, [[32, 32, 64],\
                                                 [64, 64, 128], [64, 96, 128]])
-        for param in self.sa1.parameters():
-            param.requires_grad = False
+        #for param in self.sa1.parameters():
+        #    param.requires_grad = False
         
         self.sa2 = PointNetSetAbstractionMsg(
             128, [0.4, 0.8], [64, 128], 128+128+64, [[128, 128, 256], [128, 196, 256]])
         
-        for param in self.sa2.parameters():
-            param.requires_grad = False
+        #for param in self.sa2.parameters():
+         #   param.requires_grad = False
 
         self.sa3 = PointNetSetAbstraction(
             npoint=None, radius=None, nsample=None, in_channel=512 + 3, mlp=[256, 512, 1024], group_all=True)
         
-        for param in self.sa3.parameters():
-            param.requires_grad = False
+        #for param in self.sa3.parameters():
+         #   param.requires_grad = False
        
         self.conv2 = nn.Conv1d(1024, 512, 1)
         self.bn1 = nn.BatchNorm1d(512)
@@ -154,8 +154,8 @@ class OpenAD_PN2_CLPP(nn.Module):
         # cosine similarity
 
         l3_points = l3_points.float()
-        with torch.no_grad():
-            text_features = self.cls_encoder(text) # Use the trainable text encoder
+        
+        text_features = self.cls_encoder(text) # Use the trainable text encoder
             # print(text_features.size())
             # print(l3_points.size())
             # raise ValueError("With great power comes great responsibility")
@@ -189,8 +189,8 @@ class OpenAD_PN2_CLPP(nn.Module):
         # cosine similarity
 
         l3_points = l3_points.float()
-        with torch.no_grad():
-            text_features = cls_encoder(text)
+        
+        text_features = self.cls_encoder(text)
             # print(text_features.size())
             # print(l3_points.size())
             # raise ValueError("With great power comes great responsibility")
