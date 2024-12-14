@@ -57,6 +57,15 @@ We provide the pretrained models at [this drive](https://drive.google.com/drive/
 
 (shaofeng: 目前的ckpt放 `./pretrain` 目录下，可以改)
 
+### 4.1 Open-Vocabulary Testing for CLPP model with merged checkpoints
+Up till now, our CLPP model doesn't generate per-point features. Therefore we conbine the feature propagation layers from pretrained OpenAD checkpoint with the point aggregation layers from the CLPP checkpoint to get point-wise features to calculate per-point affordance classification score.
+
+The evaluation code is implemented in `eval_local.py` and both OpenAD checkpoint and CLPP checkpoint is required.
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python3 eval_local.py --OpenAD_config ./config/openad_pn2/full_shape_open_vocab_cfg.py --CLPP_config ./config/openad_pn2_clpp/clpp_full_shape_open_vocab_cfg.py --OpenAD_checkpoint ./log/openad_pn2/OPENAD_PN2_FULL_SHAPE_Release/best_model_openad_pn2_estimation.t7 --CLPP_checkpoint ./log/openad_pn2_clpp/OPENAD_PN2_CLPP/current_clpp_model.t7 --gpu 0
+```
+
 ## 5. Generate new data for the next steps (Completed by ysf)
 
 To generate new data for the following steps, please paste your api key [here](https://github.com/Fugtemypt123/OpenAD/blob/main/utils/gpt.py#L7). and run:

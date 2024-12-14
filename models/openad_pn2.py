@@ -47,6 +47,14 @@ class OpenAD_PN2(nn.Module):
 
         self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
+    @classmethod
+    def from_checkpoint(cls, CLPP_layers: Tuple, OpenAD_layers: Tuple):
+        model = OpenAD_PN2(args=None, num_classes=None, normal_channel=False)
+        (model.fp3, model.fp2, model.fp1, model.bn1, model.conv1) = OpenAD_layers
+        (model.sa1, model.sa2, model.sa3) = CLPP_layers
+        model.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
+        return model
+    
     def forward(self, xyz, affordance):
         # Set Abstraction layers
         xyz = xyz.contiguous()
