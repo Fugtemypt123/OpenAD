@@ -1,6 +1,6 @@
 import pickle
 
-path = './data/ysf_full_shape_train_data.pkl'
+path = './data/ysf_full_shape_val_data.pkl'
 
 f=open(path,'rb')
 data=pickle.load(f, encoding='latin1')
@@ -26,7 +26,7 @@ for i in range(len(data)):
     clean_data.append(new_line)
 
 # save clean_data
-path='./data/ysf_full_shape_train_data_clean.pkl'
+path='./data/ysf_full_shape_val_data_clean.pkl'
 f=open(path,'wb')
 pickle.dump(clean_data,f)
 f.close()

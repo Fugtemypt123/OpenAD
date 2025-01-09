@@ -63,7 +63,6 @@ class OpenAD_PN2(nn.Module):
         l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
         # print(l2_xyz.size(), l2_points.size())
         l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
-        # print(l3_xyz.size(), l3_points.size())
         
         # Feature Propagation layers
         l2_points = self.fp3(l2_xyz, l3_xyz, l2_points, l3_points)
@@ -72,7 +71,6 @@ class OpenAD_PN2(nn.Module):
         # print(l1_points.size())
         l0_points = self.fp1(l0_xyz, l1_xyz, torch.cat(
             [l0_xyz, l0_points], 1), l1_points)
-        # print(l0_points.size())
 
         l0_points = self.bn1(self.conv1(l0_points))
 
@@ -81,12 +79,41 @@ class OpenAD_PN2(nn.Module):
         l0_points = l0_points.permute(0, 2, 1).float()
         with torch.no_grad():
             text_features = cls_encoder(affordance)
-            # print(text_features.size())
-            # print(l0_points.size())
         x = (self.logit_scale * (l0_points @ text_features) / (torch.norm(l0_points, dim=2, keepdim=True)\
             @ torch.norm(text_features, dim=0, keepdim=True))).permute(0, 2, 1)
         
         x = F.log_softmax(x, dim=1)
+        return x
+    
+    def get_global_feats(self, xyz, text):
+        xyz = xyz.contiguous()
+        B, C, N = xyz.shape
+        if self.normal_channel:
+            l0_points = xyz
+            l0_xyz = xyz[:, :3, :]
+        else:
+            l0_xyz = xyz
+            l0_points = xyz
+
+        l1_xyz, l1_points = self.sa1(l0_xyz, l0_points)
+        l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
+        l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
+        
+        l2_points = self.fp3(l2_xyz, l3_xyz, l2_points, l3_points)
+        l1_points = self.fp2(l1_xyz, l2_xyz, l1_points, l2_points)
+        l0_points = self.fp1(l0_xyz, l1_xyz, torch.cat(
+            [l0_xyz, l0_points], 1), l1_points)
+
+        l0_points = self.bn1(self.conv1(l0_points))
+        # global pooling
+        l0_points = torch.mean(l0_points, dim=2)
+
+        l0_points = l0_points.float()
+        with torch.no_grad():
+            text_features = cls_encoder(text)
+        x = (self.logit_scale * (l0_points @ text_features) / (torch.norm(l0_points, dim=1, keepdim=True)\
+            @ torch.norm(text_features, dim=0, keepdim=True)))
+        
         return x
 
 
@@ -132,36 +159,7 @@ class OpenAD_PN2_CLPP(nn.Module):
 
     def forward(self, xyz, text):
         # Set Abstraction layers
-        xyz = xyz.contiguous()
-        B, C, N = xyz.shape
-        if self.normal_channel:
-            l0_points = xyz
-            l0_xyz = xyz[:, :3, :]
-        else:
-            l0_xyz = xyz
-            l0_points = xyz
-
-        l1_xyz, l1_points = self.sa1(l0_xyz, l0_points)
-        # print(l1_xyz.size(), l1_points.size())
-        l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
-        # print(l2_xyz.size(), l2_points.size())
-        l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
-
-        l3_points = self.bn1(self.conv2(l3_points))
-
-        l3_points = l3_points.squeeze(-1)
-
-        # cosine similarity
-
-        l3_points = l3_points.float()
-        
-        text_features = self.cls_encoder(text) # Use the trainable text encoder
-            # print(text_features.size())
-            # print(l3_points.size())
-            # raise ValueError("With great power comes great responsibility")
-        x = (self.logit_scale * (l3_points @ text_features) / (torch.norm(l3_points, dim=1, keepdim=True)\
-            @ torch.norm(text_features, dim=0, keepdim=True)))
-        # print(f'x: {x}')
+        x = self.get_logits(xyz, text)
         x = F.log_softmax(x, dim=1)
         # print(f'x: {x}')
         return x

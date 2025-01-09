@@ -18,7 +18,8 @@ def eval_global_util(model, val_loader):
             data = data.float().cuda()
             data = data.permute(0, 2, 1)
             
-            afford_pred = model.get_logits(data, prompt)
+            # afford_pred = model.get_logits(data, prompt)
+            afford_pred = model.get_global_feats(data, prompt)
             afford_pred = afford_pred.squeeze(-1).cpu().numpy()
             afford_pred = np.argmax(afford_pred)
             

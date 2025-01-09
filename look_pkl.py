@@ -8,12 +8,15 @@ data=pickle.load(f, encoding='latin1')
 
 # func = []
 
-# for i in range(len(data)):
-#     func.append(data[i]['functionality'][0])
+for i in range(len(data)):
+    if data[i]["semantic class"] == 'Chair':
+        print(data[i]['functionality'])
+        break
+    # func.append(data[i]['functionality'][0])
 
 # print(func)
 
-print(data)
+# print(data)
 
 # print(f'the length of data is {len(data)}')
 # print(data[300]['semantic class'])
