@@ -1,22 +1,11 @@
 <div align="center">
   
-# Open-Vocabulary Affordance Detection in 3D Point Clouds
-  
-[![Conference](https://img.shields.io/badge/IROS-2023-FGD94D.svg)](https://ieee-iros.org/)
-[![Paper](https://img.shields.io/badge/Paper-arxiv.2303.02401-FF6B6B.svg)](https://arxiv.org/abs/2303.02401)
+# Learn the Concept of a Daily Object (DALF: Dual-stage Affordance Learning Framework for Object Concept Learning)
 
 
-Official code for the IROS 2023 paper "Open-Vocabulary Affordance Detection in 3D Point Clouds".
+Official code for "DALF: Dual-stage Affordance Learning Framework for Object Concept Learning".
 
-<h2><a href="https://ieee-iros.org/iros-2023-award-winners/">Best Overall and Best Student Paper Awards Finalist</a></h2>
-
-
-<img src="./demo/intro.jpg" width="500">
-
-We present OpenAD for a new task of open-vocabulary affordance detection in 3D point clouds. Different from traditional methods that are restricted to a predefined affordance labels set, OpenAD can detect unlimited affordances conveyed through the form of natural language.
-
-![image](demo/method.jpg)
-Our key idea is to learn collaboratively the mapping between the language labels and the visual features of the point cloud.
+We present DALF for enabling a comprehensive understanding of object affordances.
 
 </div>
 
