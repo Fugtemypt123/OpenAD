@@ -104,8 +104,8 @@ class OpenAD_PN2_CLPP(nn.Module):
         
         self.cls_encoder = ClassEncoder()
         # Make the text encoder trainable during CLPP training
-        for param in self.cls_encoder.parameters():
-            param.requires_grad = True
+        # for param in self.cls_encoder.parameters():
+        #     param.requires_grad = True
         
         print("Text encoder main trainable during CLPP training")
 
