@@ -1,11 +1,11 @@
-<div align="center">
-  
 # Learn the Concept of a Daily Object (DALF: Dual-stage Affordance Learning Framework for Concept Learning)
 
 
 Official code for "DALF: Dual-stage Affordance Learning Framework for Concept Learning".
 
 We present DALF for to enable a comprehensive understanding of object affordances.
+
+
 
 ## 1. Getting Started
 We strongly encourage you to create a separate CONDA environment.
